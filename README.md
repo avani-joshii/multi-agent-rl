@@ -1,8 +1,14 @@
+
+
+
 # multi-agent-rl
 
 ## Overview
 
 MultiRaceEnv is a custom Gymnasium environment simulating two cars racing on a shared elliptical track. Each car is controlled by its own independently trained PPO policy, using raycast-based perception, checkpoint-based navigation, and opponent-awareness.
+
+## Demo
+https://github.com/user-attachments/assets/4962ea8c-4b28-43c0-8bca-0d059774eb05
 
 Key features:
 
