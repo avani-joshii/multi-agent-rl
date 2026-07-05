@@ -51,18 +51,18 @@ A consistent upward trend, indicating genuine policy improvement rather than a s
  
 ## Debugging Journey
  
-Building this surfaced several non-obvious bugs — documented here since diagnosing them was as much a part of the project as the final result:
+Building this surfaced several non-obvious bugs documented here since diagnosing them was as much a part of the project as the final result:
  
-1. **Instant crash at spawn** — cars spawned exactly on the track's outer boundary rather than inside the lane, due to a hardcoded spawn coordinate that didn't match the environment's own computed lane-center formula.
-2. **Checkpoints never registering progress** — checkpoints were generated in the opposite rotational direction to the cars' spawn heading, so the "next checkpoint" target was almost a full lap away in the wrong direction.
-3. **Failures specific to corners, not straights** — the ideal track-heading function used a circular tangent formula (`angle ± 90°`) on an *elliptical* track. That approximation is exact only at the four cardinal points, and increasingly wrong approaching the tighter curvature between them — explaining why failures clustered at turns.
-4. **Wall-hugging and backward driving** — raw speed reward was uncoupled from direction, so a fast agent driving the wrong way scored similarly to a correctly-driving one.
-5. **Standing-still exploit** — once crash and misalignment penalties existed, agents learned that stopping near (but not touching) a wall accumulated less negative reward than actually trying to navigate. Diagnosed via a flat `ep_rew_mean` combined with `explained_variance` collapsing toward 0, indicating a degenerate, state-independent policy.
+1. **Instant crash at spawn** - cars spawned exactly on the track's outer boundary rather than inside the lane, due to a hardcoded spawn coordinate that didn't match the environment's own computed lane-center formula.
+2. **Checkpoints never registering progress** - checkpoints were generated in the opposite rotational direction to the cars' spawn heading, so the "next checkpoint" target was almost a full lap away in the wrong direction.
+3. **Failures specific to corners, not straights** - the ideal track-heading function used a circular tangent formula (`angle ± 90°`) on an *elliptical* track. That approximation is exact only at the four cardinal points, and increasingly wrong approaching the tighter curvature between them, explaining why failures clustered at turns.
+4. **Wall-hugging and backward driving** - raw speed reward was uncoupled from direction, so a fast agent driving the wrong way scored similarly to a correctly-driving one.
+5. **Standing-still exploit** - once crash and misalignment penalties existed, agents learned that stopping near (but not touching) a wall accumulated less negative reward than actually trying to navigate. Diagnosed via a flat `ep_rew_mean` combined with `explained_variance` collapsing toward 0, indicating a degenerate, state-independent policy.
+
 ## Design Decisions
- 
-- **Raycasts over raw pixel input** — a compact, interpretable low-dimensional state is sufficient for local navigation, avoiding the training cost of a CNN-based visual policy.
+ - **Raycasts over raw pixel input** — a compact, interpretable low-dimensional state is sufficient for local navigation, avoiding the training cost of a CNN-based visual policy.
 - **PPO over DQN/SAC** — stable with discrete actions and well-suited to an iterative workflow where the reward function was still being corrected across many runs.
-- **Independent per-agent training over joint/shared training** — isolates each agent's learning process, making it easier to diagnose which agent's behavior was broken during debugging.
+- **Independent per-agent training over joint/shared training** - isolates each agent's learning process, making it easier to diagnose which agent's behavior was broken during debugging.
 ## Roadmap
 - Obstacle avoidance with continuous proximity-based reward shaping
 - Curriculum learning (lower initial max speed, increased gradually) to speed up cornering convergence
